@@ -10,54 +10,11 @@ function App() {
     setPrompt(event.target.value);
   };
 
-  const handleSubmit = async () => {
-    const [tab] = await chrome.tabs.query({ active: true });
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id! },
-      func: (inputText) => {
-        console.log("Antes de editor");
-
-        const buttonPrompt = document.querySelector(
-          ".send-button"
-        ) as HTMLButtonElement;
-        const editor = document.querySelector(".ql-editor p");
-
-        if (!editor) {
-          console.error("El editor no fue encontrado");
-          return;
-        }
-
-        console.log(editor);
-        editor.innerHTML = inputText;
-
-        const attemptClick = (attempts = 0) => {
-          console.log(
-            "Estado del botón:",
-            `Disabled: ${buttonPrompt.disabled}`,
-            `Aria-Disabled: ${buttonPrompt.getAttribute("aria-disabled")}`,
-            `Display: ${getComputedStyle(buttonPrompt).display}`
-          );
-
-          if (
-            buttonPrompt &&
-            buttonPrompt.getAttribute("aria-disabled") !== "true" &&
-            !buttonPrompt.disabled &&
-            getComputedStyle(buttonPrompt).display !== "none"
-          ) {
-            buttonPrompt.click();
-            console.log("Botón clickeado");
-          } else if (attempts < 10) {
-            setTimeout(() => attemptClick(attempts + 1), 1000);
-          } else {
-            console.error(
-              "El botón sigue desactivado o oculto después de varios intentos"
-            );
-          }
-        };
-
-        attemptClick();
-      },
-      args: [prompt],
+  const handleSubmit = () => {
+    // Enviar mensaje al script de fondo con el texto prompt
+    chrome.runtime.sendMessage({
+      action: "openTabAndExecute",
+      promptText: prompt
     });
   };
 

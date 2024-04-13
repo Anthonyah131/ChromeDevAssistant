@@ -5,11 +5,15 @@
         "32": "icon.png"
     },
     "version": "1.0.0",
+    "background": {
+      "service_worker": "background.js"
+    },
     "action": {
         "default_popup": "index.html"
     },
     "permissions": [
-        "scripting"
+        "scripting",
+        "tabs"
     ],
     "host_permissions": [
         "http://*/*",
