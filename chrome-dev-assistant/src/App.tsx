@@ -1,45 +1,89 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useState, useEffect } from "react";
+import "./index.css";
 
 function App() {
-  const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState("");
+  const [workflow, setWorkflow] = useState("");
+  const [technology, setTechnology] = useState("");
+  const [output, setOutput] = useState("");
 
-  const handlePromptChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPrompt(event.target.value);
-  };
+  useEffect(() => {
+    setOutput(`${error} Workflow: ${workflow}, Tech: ${technology}`);
+  }, [error, workflow, technology]);
 
   const handleSubmit = () => {
-    // Enviar mensaje al script de fondo con el texto prompt
     chrome.runtime.sendMessage({
       action: "openTabAndExecute",
-      promptText: prompt
+      promptText: output,
     });
   };
 
   return (
-    <>
+    <div
+      className="bg-gray-800 text-white p-5 flex flex-col items-center justify-center"
+      style={{ width: "400px", height: "600px" }}
+    >
+      <img src="icon.png" alt="Logo" className="w-24 h-24 object-cover" />
+      <textarea
+        className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded m-4"
+        placeholder="Paste your error here..."
+        value={error}
+        onChange={(e) => setError(e.target.value)}
+      />
+
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <p>Select the workflow you wish to use:</p>
+        <label className="inline-flex items-center mr-4">
+          <input
+            type="radio"
+            name="workflow"
+            value="Reflection"
+            className="text-blue-500"
+            onChange={(e) => setWorkflow(e.target.value)}
+          />
+          <span className="ml-2">Reflection</span>
+        </label>
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            name="workflow"
+            value="Tool Use"
+            className="text-blue-500"
+            onChange={(e) => setWorkflow(e.target.value)}
+          />
+          <span className="ml-2">Tool Use</span>
+        </label>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <input type="text" value={prompt} onChange={handlePromptChange} />
-        <button onClick={handleSubmit}>Enviar Prompt</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="mt-4">
+        <p>Select the technology from where the error originated:</p>
+        <select
+          className="w-full p-2 border border-gray-300 bg-gray-700 text-white rounded"
+          value={technology}
+          onChange={(e) => setTechnology(e.target.value)}
+        >
+          <option value="">Select Technology</option>
+          {["Java", "C++", "React", "JS", "Python", "MySQL", "Remix"].map(
+            (tech) => (
+              <option key={tech} value={tech}>
+                {tech}
+              </option>
+            )
+          )}
+        </select>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <textarea
+        className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded mt-4 mb-4"
+        placeholder="Output will be displayed here..."
+        value={output}
+        readOnly
+      />
+      <button
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        onClick={handleSubmit}
+      >
+        Enviar Prompt
+      </button>
+    </div>
   );
 }
 
