@@ -8,7 +8,20 @@ function App() {
   const [output, setOutput] = useState("");
 
   useEffect(() => {
-    setOutput(`${error} Workflow: ${workflow}, Tech: ${technology}`);
+    if (error.length !== 0 && technology.length !== 0) {
+      switch (workflow) {
+        case "Reflection":
+          setOutput(`Reflexiona sobre el siguiente error que se ha encontrado en tu código de ${technology}: ${error} Analiza las causas posibles de este error. ¿Qué podría estar indicando sobre la estructura del código o los datos que se están manejando en ${technology}? Considera las particularidades de ${technology} que podrían influir en este problema. ¿Cómo podrías ajustar el código para prevenir este tipo de errores en el futuro?`);
+          break;
+        case "Tool Use":
+          setOutput(`Se ha identificado el siguiente error en tu código de ${technology}: ${error} Revisa las herramientas y recursos disponibles que podrían ayudarte a resolver este problema en el contexto de ${technology}. ¿Existe alguna documentación específica, comunidad en línea, o herramientas de depuración particularmente útiles para ${technology} que podrían ofrecerte orientación específica sobre cómo abordar este tipo de error?`);
+          break;
+        default:
+          setOutput("");
+      }
+    } else {
+      setOutput("");
+    }
   }, [error, workflow, technology]);
 
   const handleSubmit = () => {
@@ -17,6 +30,11 @@ function App() {
       promptText: output,
     });
   };
+
+  useEffect(() => {
+    setTechnology("JavaScript");
+    setWorkflow("Reflection");
+  }, []);
 
   return (
     <div
@@ -40,6 +58,7 @@ function App() {
             value="Reflection"
             className="text-blue-500"
             onChange={(e) => setWorkflow(e.target.value)}
+            checked={workflow === "Reflection"}
           />
           <span className="ml-2">Reflection</span>
         </label>
@@ -55,21 +74,13 @@ function App() {
         </label>
       </div>
       <div className="mt-4">
-        <p>Select the technology from where the error originated:</p>
-        <select
-          className="w-full p-2 border border-gray-300 bg-gray-700 text-white rounded"
+        <p>Enter the technology you are working with:</p>
+        <input
+          type="text"
           value={technology}
+          className="w-full p-2 border border-gray-300 bg-gray-700 text-white rounded m-4"
           onChange={(e) => setTechnology(e.target.value)}
-        >
-          <option value="">Select Technology</option>
-          {["Java", "C++", "React", "JS", "Python", "MySQL", "Remix"].map(
-            (tech) => (
-              <option key={tech} value={tech}>
-                {tech}
-              </option>
-            )
-          )}
-        </select>
+        />
       </div>
       <textarea
         className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded mt-4 mb-4"
