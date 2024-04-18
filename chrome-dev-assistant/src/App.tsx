@@ -1,7 +1,9 @@
+import React from "react";
 import { useState, useEffect } from "react";
 import "./index.css";
 
 function App() {
+  const [ai, setAI] = useState("");
   const [error, setError] = useState("");
   const [workflow, setWorkflow] = useState("");
   const [technology, setTechnology] = useState("");
@@ -27,6 +29,7 @@ function App() {
   const handleSubmit = () => {
     chrome.runtime.sendMessage({
       action: "openTabAndExecute",
+      ai: ai,
       promptText: output,
     });
   };
@@ -34,6 +37,7 @@ function App() {
   useEffect(() => {
     setTechnology("JavaScript");
     setWorkflow("Reflection");
+    setAI("Gemini");
   }, []);
 
   return (
@@ -42,6 +46,30 @@ function App() {
       style={{ width: "400px", height: "600px" }}
     >
       <img src="icon.png" alt="Logo" className="w-24 h-24 object-cover" />
+      <div className="py-2">
+        <p>Select the AI you wish to use:</p>
+        <label className="inline-flex items-center mr-4">
+          <input
+            type="radio"
+            name="AI"
+            value="Gemini"
+            className="text-blue-500"
+            onChange={(e) => setAI(e.target.value)}
+            checked={ai === "Gemini"}
+          />
+          <span className="ml-2">Gemini</span>
+        </label>
+        <label className="inline-flex items-center">
+          <input
+            type="radio"
+            name="AI"
+            value="Chat GPT"
+            className="text-blue-500"
+            onChange={(e) => setAI(e.target.value)}
+          />
+          <span className="ml-2">Chat GPT</span>
+        </label>
+      </div>
       <textarea
         className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded m-4"
         placeholder="Paste your error here..."
