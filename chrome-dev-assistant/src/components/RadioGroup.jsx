@@ -1,7 +1,7 @@
 function RadioGroup({ title, options, name, selectedValue, onChange }) {
   return (
-    <div className="w-full py-2 text-center">
-      <p>{title}</p>
+    <div className="w-full p-2 text-center">
+      <p className="font-bold">{title}</p>
       {options.map((option) => (
         <label key={option.value} className="inline-flex items-center mr-4">
           <input
@@ -12,7 +12,7 @@ function RadioGroup({ title, options, name, selectedValue, onChange }) {
             onChange={() => onChange(option.value)}
             checked={selectedValue === option.value}
           />
-          <span className="ml-2">{option.label}</span>
+          <span className="font-semibold ml-2">{option.label}</span>
         </label>
       ))}
     </div>

@@ -8,11 +8,6 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-// export async function getRecords() {
-//   const response = await fetch(API_URL, { headers });
-//   return response.json();
-// }
-
 export async function getRecords() {
   const response = await fetch(
     `${API_URL}?maxRecords=5&sort%5B0%5D%5Bfield%5D=createdTime&sort%5B0%5D%5Bdirection%5D=desc`,

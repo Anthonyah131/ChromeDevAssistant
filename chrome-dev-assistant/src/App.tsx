@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { getRecords, createRecord } from "./api/airtableApi";
 import "./index.css";
 import RadioGroup from "./components/RadioGroup";
 import RecordList from "./components/RecordList";
+import SkeletonRecordList from "./components/SkeletonRecordList";
 import { AirtableRecord } from "./api/index";
 
 const initialOptions = {
@@ -23,6 +24,7 @@ function App() {
   const [technology, setTechnology] = useState("JavaScript");
   const [output, setOutput] = useState("");
   const [records, setRecords] = useState([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
   useEffect(() => {
     async function initialize() {
@@ -31,6 +33,8 @@ function App() {
         setRecords(data.records);
       } catch (e) {
         console.error("Failed to fetch records:", e);
+      } finally {
+        setIsDataLoading(false);
       }
     }
     initialize();
@@ -50,92 +54,113 @@ function App() {
 
   return (
     <div
-      className="bg-gray-800 text-white p-5 flex flex-col items-center justify-center overflow-y-auto"
+      className="bg-color4 text-color1 p-2 flex flex-col items-center justify-center overflow-y-auto"
       style={{ width: "400px" }}
     >
-      <img src="icon.png" alt="Logo" className="w-24 h-24 object-cover mb-4" />
-      <RadioGroup
-        title="Select the AI you wish to use:"
-        options={initialOptions.ai}
-        name="AI"
-        selectedValue={ai}
-        onChange={setAI}
-      />
+      <Suspense fallback={<SkeletonRecordList />}>
+        {!isDataLoading ? (
+          <>
+            <img
+              src="icon.png"
+              alt="Logo"
+              className="w-24 h-24 object-cover m-2"
+            />
+            <RadioGroup
+              title="Select the AI you wish to use:"
+              options={initialOptions.ai}
+              name="AI"
+              selectedValue={ai}
+              onChange={setAI}
+            />
 
-      <textarea
-        className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded my-4"
-        placeholder="Paste your error here..."
-        value={error}
-        onChange={(e) => setError(e.target.value)}
-      />
+            <textarea
+              className="font-semibold w-full h-32 p-2 border border-color5 bg-color3 text-color1 rounded my-4 placeholder-color2"
+              placeholder="Paste your error here..."
+              value={error}
+              onChange={(e) => setError(e.target.value)}
+            />
 
-      <RadioGroup
-        title="Select the workflow you wish to use:"
-        options={initialOptions.workflow}
-        name="workflow"
-        selectedValue={workflow}
-        onChange={setWorkflow}
-      />
+            <RadioGroup
+              title="Select the workflow you wish to use:"
+              options={initialOptions.workflow}
+              name="workflow"
+              selectedValue={workflow}
+              onChange={setWorkflow}
+            />
 
-      <div className="w-full mt-4 mb-4">
-        <p>Enter the technology you are working with:</p>
-        <input
-          type="text"
-          value={technology}
-          className="w-full p-2 border border-gray-300 bg-gray-700 text-white rounded"
-          onChange={(e) => setTechnology(e.target.value)}
-        />
-      </div>
+            <div className="w-full my-2 text-center">
+              <p className="font-bold">
+                Enter the technology you are working with:
+              </p>
+              <input
+                type="text"
+                value={technology}
+                className="font-semibold w-full p-2 border border-color5 bg-color3 text-color1 rounded"
+                onChange={(e) => setTechnology(e.target.value)}
+              />
+            </div>
 
-      <textarea
-        className="w-full h-32 p-2 border border-gray-300 bg-gray-700 text-white rounded mb-4"
-        placeholder="Output will be displayed here..."
-        value={output}
-        readOnly
-      />
+            <textarea
+              className="font-semibold w-full h-32 p-2 border border-color5 bg-color3 text-color1 rounded mb-4 placeholder-color2"
+              placeholder="Output will be displayed here..."
+              value={output}
+              readOnly
+            />
 
-      <button
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-        onClick={() => {
-          chrome.runtime
-            .sendMessage({
-              action: "openTabAndExecute",
-              ai: ai,
-              promptText: output,
-            })
-            .then(() => {
-              createRecord({
-                fields: {
-                  ai,
-                  error,
-                  technology,
-                  workflow,
-                },
-              })
-                .then(() => {
-                  console.log("Record created successfully");
-                })
-                .catch((err) => {
-                  console.error("Error creating record:", err);
-                });
-            })
-            .catch((err) => {
-              console.error("Error sending message:", err);
-            });
-        }}
-      >
-        Enviar Prompt
-      </button>
+            <button
+              className={`font-semibold px-4 p-2 rounded ${
+                error && technology
+                  ? "bg-color5 text-color1 hover:bg-color5"
+                  : "bg-gray-500 cursor-not-allowed"
+              }`}
+              onClick={() => {
+                if (error && technology) {
+                  chrome.runtime
+                    .sendMessage({
+                      action: "openTabAndExecute",
+                      ai: ai,
+                      promptText: output,
+                    })
+                    .then(() => {
+                      createRecord({
+                        fields: {
+                          ai,
+                          error,
+                          technology,
+                          workflow,
+                        },
+                      })
+                        .then(() => {
+                          console.log("Record created successfully");
+                        })
+                        .catch((err) => {
+                          console.error("Error creating record:", err);
+                        });
+                    })
+                    .catch((err) => {
+                      console.error("Error sending message:", err);
+                    });
+                }
+              }}
+              disabled={!error || !technology}
+            >
+              Enviar Prompt
+            </button>
 
-      <RecordList
-        records={records}
-        onRecordClick={(record: AirtableRecord) => {
-          setError(record.fields.error);
-          setTechnology(record.fields.technology);
-          setWorkflow(record.fields.workflow);
-          setAI(record.fields.ai);
-        }}
-      />
+            <RecordList
+              records={records}
+              onRecordClick={(record: AirtableRecord) => {
+                setError(record.fields.error);
+                setTechnology(record.fields.technology);
+                setWorkflow(record.fields.workflow);
+                setAI(record.fields.ai);
+              }}
+            />
+          </>
+        ) : (
+          <SkeletonRecordList />
+        )}
+      </Suspense>
     </div>
   );
 }

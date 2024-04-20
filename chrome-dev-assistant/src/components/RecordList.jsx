@@ -6,7 +6,7 @@ function RecordList({ records, onRecordClick }) {
       {records.map((record) => (
         <div
           key={record.id}
-          className="bg-gray-700 p-4 rounded-lg shadow-md cursor-pointer"
+          className="bg-gray-700 p-4 rounded-lg shadow-md cursor-pointer text-color3"
           onClick={() => onRecordClick(record)}
         >
           <p className="font-bold">Error: {record.fields.error}</p>
