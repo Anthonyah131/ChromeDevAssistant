@@ -4,6 +4,7 @@ import "./index.css";
 import RadioGroup from "./components/RadioGroup";
 import RecordList from "./components/RecordList";
 import SkeletonRecordList from "./components/SkeletonRecordList";
+import SubmitButton from "./components/SubmitButton";
 import { AirtableRecord } from "./api/index";
 
 const initialOptions = {
@@ -51,6 +52,34 @@ function App() {
       setOutput("");
     }
   }, [error, technology, workflow]);
+
+  const handleSend = (ai, { error, technology, workflow, output }) => {
+    chrome.runtime
+      .sendMessage({
+        action: "openTabAndExecute",
+        ai: ai,
+        promptText: output,
+      })
+      .then(() => {
+        createRecord({
+          fields: {
+            ai,
+            error,
+            technology,
+            workflow,
+          },
+        })
+          .then(() => {
+            console.log("Record created successfully");
+          })
+          .catch((err) => {
+            console.error("Error creating record:", err);
+          });
+      })
+      .catch((err) => {
+        console.error("Error sending message:", err);
+      });
+  };
 
   return (
     <div
@@ -107,45 +136,14 @@ function App() {
               readOnly
             />
 
-            <button
-              className={`font-semibold px-4 p-2 rounded ${
-                error && technology
-                  ? "bg-color5 text-color1 hover:bg-color5"
-                  : "bg-gray-500 cursor-not-allowed"
-              }`}
-              onClick={() => {
-                if (error && technology) {
-                  chrome.runtime
-                    .sendMessage({
-                      action: "openTabAndExecute",
-                      ai: ai,
-                      promptText: output,
-                    })
-                    .then(() => {
-                      createRecord({
-                        fields: {
-                          ai,
-                          error,
-                          technology,
-                          workflow,
-                        },
-                      })
-                        .then(() => {
-                          console.log("Record created successfully");
-                        })
-                        .catch((err) => {
-                          console.error("Error creating record:", err);
-                        });
-                    })
-                    .catch((err) => {
-                      console.error("Error sending message:", err);
-                    });
-                }
-              }}
-              disabled={!error || !technology}
-            >
-              Enviar Prompt
-            </button>
+            <SubmitButton
+              ai={ai}
+              error={error}
+              technology={technology}
+              workflow={workflow}
+              output={output}
+              onSend={handleSend}
+            />
 
             <RecordList
               records={records}
