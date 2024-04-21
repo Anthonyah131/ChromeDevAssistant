@@ -1,6 +1,6 @@
 import React from "react";
 
-function SkeletonRecordList() {
+export function SkeletonRecordList() {
   return (
     <div className="animate-pulse space-y-4 mt-4">
       <div className="w-24 h-24 bg-gray-300 rounded-full animate-pulse m-2"></div>
@@ -40,5 +40,3 @@ function SkeletonRecordList() {
     </div>
   );
 }
-
-export default SkeletonRecordList;

@@ -1,4 +1,6 @@
-function RadioGroup({ title, options, name, selectedValue, onChange }) {
+import React from "react";
+
+export function RadioGroup({ title, options, name, selectedValue, onChange }) {
   return (
     <div className="w-full p-2 text-center">
       <p className="font-bold">{title}</p>
@@ -18,5 +20,3 @@ function RadioGroup({ title, options, name, selectedValue, onChange }) {
     </div>
   );
 }
-
-export default RadioGroup;

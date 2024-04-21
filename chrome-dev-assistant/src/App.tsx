@@ -1,10 +1,10 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { getRecords, createRecord } from "./api/airtableApi";
 import "./index.css";
-import RadioGroup from "./components/RadioGroup";
-import RecordList from "./components/RecordList";
-import SkeletonRecordList from "./components/SkeletonRecordList";
-import SubmitButton from "./components/SubmitButton";
+import { RadioGroup } from "./components/RadioGroup";
+import { RecordList } from "./components/RecordList";
+import { SkeletonRecordList } from "./components/SkeletonRecordList";
+import { SubmitButton } from "./components/SubmitButton";
 import { AirtableRecord } from "./api/index";
 
 const initialOptions = {

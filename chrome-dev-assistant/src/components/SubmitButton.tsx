@@ -1,4 +1,13 @@
-function SubmitButton({ ai, error, technology, workflow, output, onSend }) {
+import React from "react";
+
+export function SubmitButton({
+  ai,
+  error,
+  technology,
+  workflow,
+  output,
+  onSend,
+}) {
   const isEnabled = error && technology;
 
   return (
@@ -19,5 +28,3 @@ function SubmitButton({ ai, error, technology, workflow, output, onSend }) {
     </button>
   );
 }
-
-export default SubmitButton;

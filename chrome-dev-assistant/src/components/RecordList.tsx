@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-function RecordList({ records, onRecordClick }) {
+export function RecordList({ records, onRecordClick }) {
   return (
     <div className="space-y-4 mt-4 w-full">
       {records.map((record) => (
@@ -19,5 +19,3 @@ function RecordList({ records, onRecordClick }) {
     </div>
   );
 }
-
-export default RecordList;
